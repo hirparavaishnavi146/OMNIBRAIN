@@ -1,0 +1,47 @@
+define user ask about document
+  "What are the revenue figures?"
+  "Summarize page 5."
+  "What does the chart on page 12 show?"
+  "Compare the Q3 and Q4 numbers in Table 2."
+  "What are the key findings in the report?"
+  "How did expenses change year over year?"
+
+define user ask off topic
+  "What is the capital of France?"
+  "Write me a poem."
+  "What is the meaning of life?"
+  "Help me write Python code."
+  "What is the weather today?"
+  "Tell me a joke."
+
+define flow check topic relevance
+  user ...
+  $is_on_topic = execute check_topic(question=$last_user_message)
+  if $is_on_topic == "off topic"
+    bot refuse off topic
+    stop
+
+define flow check grounding
+  bot ...
+  $is_grounded = execute check_grounding(answer=$last_bot_message, context=$relevant_chunks)
+  if $is_grounded == "not grounded"
+    bot refuse not grounded
+    stop
+
+define flow check response scope
+  bot ...
+  if "I don't know" in $last_bot_message
+    bot inform not enough information
+    stop
+
+define bot refuse off topic
+  "I can only answer questions about the uploaded document(s). Your question appears to be outside the scope of the document content. Please ask a question about the document's text, tables, charts, or data."
+
+define bot refuse not grounded
+  "I cannot verify this answer against the document content. The information needed to answer this question was not found in the retrieved document context."
+
+define bot inform not enough information
+  "Based on the available document content, I don't have enough information to fully answer this question. Please try rephrasing your question or asking about a different section of the document."
+
+define bot inform answer from document
+  "Here is what the document says about your question..."

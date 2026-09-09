@@ -1,0 +1,46 @@
+prompts:
+  - task: check_grounding
+    content: |
+      You are a grounding checker for a document Q&A system.
+
+      Given the following CONTEXT extracted from a document and an ANSWER generated
+      from that context, determine whether the answer is fully grounded in (supported by)
+      the context.
+
+      CONTEXT:
+      {{ context }}
+
+      ANSWER:
+      {{ answer }}
+
+      Respond with exactly one of:
+      - "grounded" if every claim in the answer is supported by the context
+      - "not grounded" if the answer contains information not found in the context
+
+  - task: check_topic
+    content: |
+      You are a topic relevance checker for a document Q&A system.
+
+      The system is designed to answer questions ONLY about uploaded documents.
+      Given the following user question, determine if it is asking about
+      document content or if it is an off-topic general knowledge question.
+
+      QUESTION:
+      {{ question }}
+
+      Respond with exactly one of:
+      - "on topic" if the question could be about a document's content
+      - "off topic" if the question is clearly unrelated to any document (e.g., general knowledge, personal questions, coding help)
+
+  - task: refuse_off_topic
+    content: |
+      I can only answer questions about the uploaded document(s). Your question
+      appears to be outside the scope of the document content. Please ask a
+      question about the document's text, tables, charts, or data.
+
+  - task: refuse_not_grounded
+    content: |
+      I cannot verify this answer against the document content. The information
+      needed to answer this question was not found in the retrieved document
+      context. Please try rephrasing your question or asking about a different
+      aspect of the document.
